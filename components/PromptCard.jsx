@@ -1,9 +1,10 @@
-import React from 'react'
+"use client";
+
 
 const PromptCard = () => {
   return (
     <div>
-      
+      prom
     </div>
   )
 }

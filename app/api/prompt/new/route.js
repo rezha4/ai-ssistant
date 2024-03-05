@@ -1,7 +1,23 @@
-import { connectToDB } from "next.config.mjs";
-import Prompt from "next.config.mjs";
+import { connectToDB } from "../../../../utils/database";
+import Prompt from "../../../../models/prompt";
 
 export const POST = async (req, res) => {
   const { userId, prompt, tag } = await req.json();
-  await connectToDB
+
+  try {
+    await connectToDB();
+    const newPrompt = new Prompt({
+      creator: userId,
+      prompt,
+      tag,
+    });
+
+    await newPrompt.save();
+
+    return new Response(JSON.stringify(newPrompt), {
+      status: 201,
+    });
+  } catch (error) {
+    return new Response("Failed creating prompt", { status: 500 });
+  }
 };
