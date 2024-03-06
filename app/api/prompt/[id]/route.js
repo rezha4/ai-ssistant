@@ -1,6 +1,6 @@
 // GET
-import { connectToDB } from "../../../utils/database";
-import Prompt from "../../../models/prompt";
+import { connectToDB } from "../../../../utils/database";
+import Prompt from "../../../../models/prompt";
 
 export const GET = async (request, { params }) => {
   try {
@@ -20,11 +20,16 @@ export const PATCH = async (request, { params }) => {
   try {
     await connectToDB();
 
-    const existingPrompt = await prompt.findById(params.id);
+    const existingPrompt = await Prompt.findById(params.id);
+
     if (!existingPrompt) return new Response("Prompt not found", { status: 404 });
+
     existingPrompt.prompt = prompt;
     existingPrompt.tag = tag;
-    return new Response(JSON.stringify(existingPrompt), { status: 200 });
+
+    await existingPrompt.save();
+
+    return new Response("Successfully updated prompt", { status: 200 });
   } catch (error) {
     return new Response("Error patching prompt", { status: 500 });
   }
@@ -34,7 +39,10 @@ export const PATCH = async (request, { params }) => {
 export const DELETE = async (request, { params }) => {
   try {
     await connectToDB();
+
+    // Find the prompt by ID and remove it
     await Prompt.findByIdAndRemove(params.id);
+
     return new Response("Prompt deleted successfully", { status: 200 });
   } catch (error) {
     return new Response("Error deleting prompt", { status: 500 });
